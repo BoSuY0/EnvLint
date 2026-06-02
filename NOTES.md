@@ -11,3 +11,4 @@
 - `npm view envlint` currently returns an unpublished-package E404; this proves the package is not currently visible in the registry, but a maintainer still needs to confirm npm name reuse/policy from the publishing account before actual release.
 - Public GitHub remote: `https://github.com/BoSuY0/EnvLint`.
 - Public blocker issue: `https://github.com/BoSuY0/EnvLint/issues/1`.
+- Public blocker audit comment: `https://github.com/BoSuY0/EnvLint/issues/1#issuecomment-4603655873`.

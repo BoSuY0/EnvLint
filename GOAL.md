@@ -90,10 +90,11 @@ Final response must summarize changed areas, exact verification commands and out
 - 2026-06-02 17:44, local release-baseline commit created. evidence: current root commit after `npm run release:check` passed.
 - 2026-06-02 17:48, CAP-7.7 remote and maintainer metadata completed. evidence: public repo `https://github.com/BoSuY0/EnvLint`, `origin` tracks `origin/main`, package metadata points at `git+https://github.com/BoSuY0/EnvLint.git`, `bugs`, and `homepage`.
 - 2026-06-02 17:51, external release blockers are tracked publicly. evidence: `https://github.com/BoSuY0/EnvLint/issues/1`.
+- 2026-06-02 17:53, release blocker issue organized. evidence: issue `https://github.com/BoSuY0/EnvLint/issues/1` has labels `release-blocker`, `external`, milestone `v1.0.0`, and blocker audit comment `https://github.com/BoSuY0/EnvLint/issues/1#issuecomment-4603655873`.
 
 ### In Progress
 
-- 2026-06-02 17:48, waiting on external public release gates after public GitHub push. Bridge: feeds CAP-7.8 through CAP-7.10; output enters product state only after npm credentials/name policy, GitHub Actions billing health, remote CI, npm publish, GitHub release, and `v1` tag verification.
+- 2026-06-02 17:53, blocked on external public release gates after public GitHub push and blocker issue organization. Bridge: feeds CAP-7.8 through CAP-7.10; output enters product state only after npm credentials/name policy, GitHub Actions billing health, remote CI, npm publish, GitHub release, and `v1` tag verification.
 
 ### Blockers / Open Questions
 
@@ -101,6 +102,7 @@ Final response must summarize changed areas, exact verification commands and out
 - Blocker: GitHub-hosted CI run `26827647393` for commit `99c2c55b569b0a5691b5e41a96211937ce605b8a` failed before steps started; GitHub annotation says the account is locked due to a billing issue, so CAP-7.9 cannot be verified until account billing is fixed.
 - Blocker: npm publish requires maintainer auth/token and package-name policy confirmation for `envlint`; `npm whoami` returns `ENEEDAUTH`, and `npm view envlint` previously returned an unpublished-package E404, which is not sufficient proof that this account may publish it.
 - Tracking issue: `https://github.com/BoSuY0/EnvLint/issues/1` records the remaining external v1.0 release gates.
+- Blocker audit: the same external release blocker has recurred across consecutive goal turns after local release readiness, local commit, public GitHub push, and issue tracking; no further meaningful release progress is possible without fixing GitHub billing and npm auth.
 
 ### Iteration Log
 
