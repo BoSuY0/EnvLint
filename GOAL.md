@@ -88,16 +88,17 @@ Final response must summarize changed areas, exact verification commands and out
 - 2026-06-02 17:41, CAP-7.4 clean install verified. evidence: packed tarball installed into a fresh temp consumer; `npx envlint --version` printed `1.0.0`; `envlint init` created config; `envlint scan --format json` produced status `passed`.
 - 2026-06-02 17:41, CAP-7.6 Action and dogfood verified. evidence: composite Action run-step smoke produced `/tmp/envlint-action-report.md`, `/tmp/envlint-annotations.json`, and annotations; dogfood scan produced status `passed`, summary 0/0/0.
 - 2026-06-02 17:44, local release-baseline commit created. evidence: current root commit after `npm run release:check` passed.
+- 2026-06-02 17:48, CAP-7.7 remote and maintainer metadata completed. evidence: public repo `https://github.com/BoSuY0/EnvLint`, `origin` tracks `origin/main`, package metadata points at `git+https://github.com/BoSuY0/EnvLint.git`, `bugs`, and `homepage`.
 
 ### In Progress
 
-- 2026-06-02 17:44, waiting on external public release gates after local commit. Bridge: feeds CAP-7.7 through CAP-7.10; output enters product state only after maintainer remote/npm credentials allow remote metadata, real CI, publish, GitHub release, and `v1` tag verification.
+- 2026-06-02 17:48, waiting on external public release gates after public GitHub push. Bridge: feeds CAP-7.8 through CAP-7.10; output enters product state only after npm credentials/name policy, GitHub Actions billing health, remote CI, npm publish, GitHub release, and `v1` tag verification.
 
 ### Blockers / Open Questions
 
 - Config readiness note: `/goal` is available and project is trusted, but read-only check reported unset `model_context_window` and `model_auto_compact_token_limit`; continue with file-backed state.
-- Blocker: no Git remote is configured, so CAP-7.7/CAP-7.9/CAP-7.10 cannot be verified from current state.
-- Blocker: npm publish requires maintainer auth/token and package-name policy confirmation for `envlint`; `npm view envlint` returns an unpublished-package E404, which is not sufficient proof that this account may publish it.
+- Blocker: GitHub-hosted CI run `26827647393` for commit `99c2c55b569b0a5691b5e41a96211937ce605b8a` failed before steps started; GitHub annotation says the account is locked due to a billing issue, so CAP-7.9 cannot be verified until account billing is fixed.
+- Blocker: npm publish requires maintainer auth/token and package-name policy confirmation for `envlint`; `npm whoami` returns `ENEEDAUTH`, and `npm view envlint` previously returned an unpublished-package E404, which is not sufficient proof that this account may publish it.
 
 ### Iteration Log
 

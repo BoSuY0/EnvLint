@@ -57,6 +57,7 @@ bash /tmp/envlint-action-run.sh
 - Confirm the real Git remote is `https://github.com/BoSuY0/EnvLint` and `package.json` has matching `repository`, `bugs`, and `homepage` fields.
 - Confirm the `envlint` npm package name is publishable from the maintainer account. `npm view envlint` currently returns an unpublished-package E404, so a maintainer should verify npm policy and account ownership before publishing.
 - Configure `NPM_TOKEN` and GitHub release permissions.
+- Confirm GitHub Actions can start jobs on the repository. A workflow run that fails before steps with an account billing lock is not release evidence.
 - Commit the release tree, push it, and run CI on GitHub.
 - Publish from CI or run:
 

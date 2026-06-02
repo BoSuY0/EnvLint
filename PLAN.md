@@ -52,7 +52,7 @@ Status markers: `[ ]` pending, `[~]` in progress, `[x]` verified with evidence i
 - [x] CAP-7.4 Clean tarball install in a fresh consumer project works with `npx envlint --version`, `envlint init`, and `envlint scan --format json`.
 - [x] CAP-7.5 `npm run publish:dry-run` succeeds and prepares `envlint@1.0.0` for public npm publish.
 - [x] CAP-7.6 Composite GitHub Action run-step smoke emits report files and inline annotations locally.
-- [ ] CAP-7.7 Real Git remote is configured and `package.json` has maintainer-owned `repository`, `bugs`, and `homepage` URLs.
+- [x] CAP-7.7 Real Git remote is configured and `package.json` has maintainer-owned `repository`, `bugs`, and `homepage` URLs.
 - [ ] CAP-7.8 Maintainer confirms npm `envlint` package-name/account policy, authenticates npm, and configures `NPM_TOKEN`.
-- [ ] CAP-7.9 Release commit is pushed and GitHub-hosted CI passes on the remote repository.
+- [ ] CAP-7.9 Release commit is pushed and GitHub-hosted CI passes on the remote repository. Current remote CI cannot start because GitHub reports the account is locked due to a billing issue.
 - [ ] CAP-7.10 Actual public release is complete: `npm publish --provenance` succeeds, GitHub release exists, and `v1` tag points at the release commit.
