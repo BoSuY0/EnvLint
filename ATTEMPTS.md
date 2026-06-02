@@ -15,3 +15,4 @@ Record meaningful implementation and verification attempts here.
 - 2026-06-02 17:41: Local release preflight passed: `npm run release:check`, YAML parse for action/CI/release workflows, `npm run publish:dry-run`, clean tarball consumer install, composite Action run-step smoke, and dogfood scan.
 - 2026-06-02 17:44: Created local root release-baseline commit after `npm run release:check` passed; remaining release gates require a configured remote, maintainer npm auth/name confirmation, remote CI, actual npm publish, GitHub release, and `v1` tag.
 - 2026-06-02 17:48: Created public GitHub repo `BoSuY0/EnvLint`, pushed `main`, and verified remote URL. GitHub CI run `26827647393` failed before job steps because the account is locked due to a billing issue.
+- 2026-06-02 17:51: Verified `NPM_TOKEN=unset` and `npm whoami` returns `ENEEDAUTH`; created public tracking issue `https://github.com/BoSuY0/EnvLint/issues/1` for external release gates.

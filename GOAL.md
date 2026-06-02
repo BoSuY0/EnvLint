@@ -89,6 +89,7 @@ Final response must summarize changed areas, exact verification commands and out
 - 2026-06-02 17:41, CAP-7.6 Action and dogfood verified. evidence: composite Action run-step smoke produced `/tmp/envlint-action-report.md`, `/tmp/envlint-annotations.json`, and annotations; dogfood scan produced status `passed`, summary 0/0/0.
 - 2026-06-02 17:44, local release-baseline commit created. evidence: current root commit after `npm run release:check` passed.
 - 2026-06-02 17:48, CAP-7.7 remote and maintainer metadata completed. evidence: public repo `https://github.com/BoSuY0/EnvLint`, `origin` tracks `origin/main`, package metadata points at `git+https://github.com/BoSuY0/EnvLint.git`, `bugs`, and `homepage`.
+- 2026-06-02 17:51, external release blockers are tracked publicly. evidence: `https://github.com/BoSuY0/EnvLint/issues/1`.
 
 ### In Progress
 
@@ -99,6 +100,7 @@ Final response must summarize changed areas, exact verification commands and out
 - Config readiness note: `/goal` is available and project is trusted, but read-only check reported unset `model_context_window` and `model_auto_compact_token_limit`; continue with file-backed state.
 - Blocker: GitHub-hosted CI run `26827647393` for commit `99c2c55b569b0a5691b5e41a96211937ce605b8a` failed before steps started; GitHub annotation says the account is locked due to a billing issue, so CAP-7.9 cannot be verified until account billing is fixed.
 - Blocker: npm publish requires maintainer auth/token and package-name policy confirmation for `envlint`; `npm whoami` returns `ENEEDAUTH`, and `npm view envlint` previously returned an unpublished-package E404, which is not sufficient proof that this account may publish it.
+- Tracking issue: `https://github.com/BoSuY0/EnvLint/issues/1` records the remaining external v1.0 release gates.
 
 ### Iteration Log
 

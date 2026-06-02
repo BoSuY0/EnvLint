@@ -10,3 +10,4 @@
 - Public release cannot be truthfully marked complete from this environment alone because npm authentication/token is absent, package-name publishing rights still need maintainer confirmation, GitHub Actions cannot start while the account is locked due to a billing issue, and no actual npm/GitHub release or `v1` tag exists.
 - `npm view envlint` currently returns an unpublished-package E404; this proves the package is not currently visible in the registry, but a maintainer still needs to confirm npm name reuse/policy from the publishing account before actual release.
 - Public GitHub remote: `https://github.com/BoSuY0/EnvLint`.
+- Public blocker issue: `https://github.com/BoSuY0/EnvLint/issues/1`.
