@@ -4,6 +4,14 @@
   "description": "Static environment variable contract linter for CLI, CI, and GitHub Actions.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BoSuY0/EnvLint.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BoSuY0/EnvLint/issues"
+  },
+  "homepage": "https://github.com/BoSuY0/EnvLint#readme",
   "bin": {
     "envlint": "dist/cli.js"
   },

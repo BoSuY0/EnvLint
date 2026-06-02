@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: envlint/action@v1
+      - uses: BoSuY0/EnvLint@v1
         with:
           config: envlint.config.yaml
           comment-pr: true

@@ -57,4 +57,13 @@ npm run publish:dry-run
 
 See `RELEASE.md` before publishing to npm or tagging `v1`.
 
+GitHub Action:
+
+```yaml
+- uses: BoSuY0/EnvLint@v1
+  with:
+    config: envlint.config.yaml
+    fail-on-error: true
+```
+
 See `docs/` for CLI, configuration, GitHub Action, supported language, rule, autofix, and security details.

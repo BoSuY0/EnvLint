@@ -54,7 +54,7 @@ bash /tmp/envlint-action-run.sh
 
 ## Public Release Gates
 
-- Configure a real Git remote and update `package.json` with `repository`, `bugs`, and `homepage`.
+- Confirm the real Git remote is `https://github.com/BoSuY0/EnvLint` and `package.json` has matching `repository`, `bugs`, and `homepage` fields.
 - Confirm the `envlint` npm package name is publishable from the maintainer account. `npm view envlint` currently returns an unpublished-package E404, so a maintainer should verify npm policy and account ownership before publishing.
 - Configure `NPM_TOKEN` and GitHub release permissions.
 - Commit the release tree, push it, and run CI on GitHub.

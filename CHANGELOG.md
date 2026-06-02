@@ -18,6 +18,7 @@ Initial stable release candidate.
 - Composite GitHub Action with reports, artifacts, PR comments, annotations, diff mode, and exit policy.
 - Documentation, fixtures, CI/release workflow scaffolding, security policy, contributing guide, and issue templates.
 - Reproducible release preflight with `npm run release:check`, `npm run publish:dry-run`, and package linting through `publint`.
+- Maintainer-owned GitHub repository metadata for `BoSuY0/EnvLint`.
 
 ### Security
 
