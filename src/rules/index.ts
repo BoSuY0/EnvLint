@@ -306,7 +306,19 @@ function isRequiredByProduct(variable: EnvVariableContract): boolean {
 }
 
 function isIgnored(name: string, config: EnvLintConfig): boolean {
-  return config.ignore.some((ignore) => ignore.name === name);
+  return config.ignore.some((ignore) => !ignoreExpired(ignore.expires) && ignoreNameMatches(ignore.name, name));
+}
+
+function ignoreExpired(expires: string | undefined): boolean {
+  if (!expires) return false;
+  const expiresAt = Date.parse(`${expires}T23:59:59.999Z`);
+  return Number.isFinite(expiresAt) && Date.now() > expiresAt;
+}
+
+function ignoreNameMatches(pattern: string, name: string): boolean {
+  if (!pattern.includes('*') && !pattern.includes('?')) return pattern === name;
+  const escaped = pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.');
+  return new RegExp(`^${escaped}$`).test(name);
 }
 
 function isUnsafeDefault(value: string, unsafeDefaults: string[]): boolean {
@@ -323,4 +335,3 @@ function similarName(a: string, b: string): boolean {
   const overlap = [...tokensA].filter((token) => tokensB.has(token)).length;
   return overlap >= 2;
 }
-

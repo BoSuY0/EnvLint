@@ -27,7 +27,7 @@ npx envlint schema --from .env.example --format zod
 ## CLI
 
 - `envlint init` creates `envlint.config.yaml`.
-- `envlint scan [path] --format table|json|markdown|sarif|junit --strict --ci` scans the project.
+- `envlint scan [path] --format table|json|markdown|sarif|junit --strict --ci` scans the project. Add `--redact-secret-names` for public artifacts or `--allow-read-values` for local-only value checks.
 - `envlint fix [path] --update-example --sort --preserve-comments` updates env examples without touching real `.env` files.
 - `envlint explain NAME [path]` shows references and findings for one variable.
 - `envlint schema --from .env.example --format zod|json-schema|pydantic` generates starter validation schemas.
@@ -44,7 +44,7 @@ console.log(formatFindings(result.findings, result, { format: 'markdown' }));
 
 ## Security Defaults
 
-EnvLint reads only variable names from real `.env` files by default. Example values are read so unsafe defaults can be detected. Real values are only read when `files.readRealValues: true` or the equivalent API option is enabled.
+EnvLint reads only variable names from real `.env` files by default. Example values are read so unsafe defaults can be detected. Real values are only read when `files.readRealValues: true`, `envlint scan --allow-read-values`, or the equivalent API option is enabled. Reports mask read real env values as `<redacted-env-value>`.
 
 Enable `report.redactSecretNames: true` when report artifacts should hide secret-like variable names.
 

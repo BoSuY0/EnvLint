@@ -48,4 +48,8 @@ report:
 
 Rule settings are `off`, `info`, `warn`, or `error`.
 
-Set `report.redactSecretNames: true` to mask secret-like variable names in reports. This is useful for public CI artifacts where names such as `JWT_SECRET` or `NEXT_PUBLIC_API_SECRET` should not be displayed.
+Ignore entries match exact names by default and may use `*` or `?` wildcards, such as `FEATURE_*`. When `expires` is in the past, the ignore stops suppressing findings.
+
+Set `report.redactSecretNames: true` or pass `envlint scan --redact-secret-names` to mask secret-like variable names in reports. This is useful for public CI artifacts where names such as `JWT_SECRET` or `NEXT_PUBLIC_API_SECRET` should not be displayed.
+
+`files.readRealValues` stays `false` by default. For local-only checks that need real values, use `files.readRealValues: true` or `envlint scan --allow-read-values`; generated reports still replace those real values with `<redacted-env-value>`.

@@ -35,6 +35,7 @@
     "CHANGELOG.md",
     "CONTRIBUTING.md",
     "docs",
+    "!docs/plans",
     "LICENSE",
     "SECURITY.md"
   ],

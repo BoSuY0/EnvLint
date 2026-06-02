@@ -91,6 +91,7 @@ Final response must summarize changed areas, exact verification commands and out
 - 2026-06-02 17:48, CAP-7.7 remote and maintainer metadata completed. evidence: public repo `https://github.com/BoSuY0/EnvLint`, `origin` tracks `origin/main`, package metadata points at `git+https://github.com/BoSuY0/EnvLint.git`, `bugs`, and `homepage`.
 - 2026-06-02 17:51, external release blockers are tracked publicly. evidence: `https://github.com/BoSuY0/EnvLint/issues/1`.
 - 2026-06-02 17:53, release blocker issue organized. evidence: issue `https://github.com/BoSuY0/EnvLint/issues/1` has labels `release-blocker`, `external`, milestone `v1.0.0`, and blocker audit comment `https://github.com/BoSuY0/EnvLint/issues/1#issuecomment-4603655873`.
+- 2026-06-02 18:09, CAP-8 local hardening completed while release gates remain external. evidence: `npm test` passed 7 files/20 tests; `npm run build` exit 0; `npm run lint` exit 0; `npm run release:check` passed including smoke, audit, publint, and pack dry-run with 71 publishable files and no `docs/plans` in the tarball.
 
 ### In Progress
 

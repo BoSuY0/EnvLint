@@ -2,9 +2,11 @@ import type { EnvFinding, ReporterOptions, ScanResult, Severity } from '../types
 import { escapeXml, severityRank } from '../utils.js';
 
 export function formatFindings(findings: EnvFinding[], result: ScanResult, options: ReporterOptions): string {
-  const secretNames = options.redactSecretNames ? collectSecretNames(findings, result) : new Set<string>();
-  const printableFindings = options.redactSecretNames ? deepRedact(findings, secretNames) : findings;
-  const printableResult = options.redactSecretNames ? deepRedact(result, secretNames) : result;
+  const valueSafeFindings = redactRealEnvValues(findings);
+  const valueSafeResult = redactRealEnvValues(result);
+  const secretNames = options.redactSecretNames ? collectSecretNames(valueSafeFindings, valueSafeResult) : new Set<string>();
+  const printableFindings = options.redactSecretNames ? deepRedact(valueSafeFindings, secretNames) : valueSafeFindings;
+  const printableResult = options.redactSecretNames ? deepRedact(valueSafeResult, secretNames) : valueSafeResult;
   const sorted = [...printableFindings].sort((a, b) => severityRank(b.severity) - severityRank(a.severity) || a.variableName.localeCompare(b.variableName));
   switch (options.format) {
     case 'json':
@@ -22,6 +24,7 @@ export function formatFindings(findings: EnvFinding[], result: ScanResult, optio
 }
 
 const redactedSecretName = '<redacted-secret-name>';
+const redactedEnvValue = '<redacted-env-value>';
 
 function collectSecretNames(findings: EnvFinding[], result: ScanResult): Set<string> {
   const names = new Set<string>();
@@ -44,6 +47,21 @@ function deepRedact<T>(value: T, names: Set<string>): T {
   return Object.fromEntries(
     Object.entries(value).map(([key, entry]) => [redactString(key, names), deepRedact(entry, names)])
   ) as T;
+}
+
+function redactRealEnvValues<T>(value: T): T {
+  if (Array.isArray(value)) return value.map((item) => redactRealEnvValues(item)) as T;
+  if (!value || typeof value !== 'object') return value;
+
+  const redacted = Object.fromEntries(
+    Object.entries(value).map(([key, entry]) => [key, redactRealEnvValues(entry)])
+  ) as Record<string, unknown>;
+
+  if (redacted.envFileKind === 'real' && redacted.valueWasRead === true && typeof redacted.defaultValue === 'string') {
+    redacted.defaultValue = redactedEnvValue;
+  }
+
+  return redacted as T;
 }
 
 function redactString(value: string, names: Set<string>): string {

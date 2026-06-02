@@ -1,6 +1,6 @@
 # Autofix Behavior
 
-`envlint fix --update-example` updates the primary example env file.
+`envlint fix --update-example` updates the primary example env file. The CLI refuses to mutate env example files without the explicit `--update-example` flag.
 
 Allowed v1.0 fixes:
 
@@ -15,4 +15,3 @@ Safety boundaries:
 - Real `.env` files are never modified by default.
 - Existing comments are preserved.
 - Use `--dry-run` to inspect output before writing.
-

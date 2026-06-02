@@ -20,8 +20,9 @@ export function parseDockerfile(content: string, filePath: string): EnvReference
     const trimmed = raw.trim();
     const instructionMatch = trimmed.match(/^(ARG|ENV)\s+(.+)$/i);
     if (!instructionMatch) continue;
+    const instruction = instructionMatch[1]?.toUpperCase() as 'ARG' | 'ENV';
     const rest = instructionMatch[2] ?? '';
-    for (const token of splitDockerTokens(rest)) {
+    for (const token of splitDockerTokens(rest, instruction)) {
       const [key, ...valueParts] = token.split('=');
       const name = key?.trim();
       if (!name || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) continue;
@@ -41,7 +42,7 @@ export function parseDockerfile(content: string, filePath: string): EnvReference
   return refs;
 }
 
-function splitDockerTokens(input: string): string[] {
+function splitDockerTokens(input: string, instruction: 'ARG' | 'ENV'): string[] {
   const tokens: string[] = [];
   let current = '';
   let quote: string | undefined;
@@ -64,7 +65,9 @@ function splitDockerTokens(input: string): string[] {
     current += char;
   }
   if (current) tokens.push(current);
-  if (tokens.length === 2 && !tokens[0]?.includes('=') && !tokens[1]?.includes('=')) return [tokens[0] ?? ''];
+  if (instruction === 'ENV' && tokens.length >= 2 && !tokens[0]?.includes('=')) {
+    return [`${tokens[0] ?? ''}=${tokens.slice(1).join(' ')}`];
+  }
   return tokens;
 }
 
@@ -185,4 +188,3 @@ function parseNetlifyToml(content: string, filePath: string): EnvReference[] {
   }
   return refs;
 }
-

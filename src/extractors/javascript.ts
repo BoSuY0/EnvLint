@@ -20,6 +20,7 @@ export function extractJavaScriptEnv(content: string, filePath: string): EnvRefe
     collectEnvMember(node, stack, refs, filePath);
     collectEnvCall(node, stack, refs, filePath);
     collectProcessEnvDestructure(node, refs, filePath);
+    collectFrameworkEnvConfig(node, refs, filePath);
     collectSchemaProperty(node, stack, refs, filePath);
   });
   return dedupeRefs(refs);
@@ -83,6 +84,34 @@ function collectProcessEnvDestructure(node: NodeLike, refs: EnvReference[], file
     const key = property.key as NodeLike | undefined;
     const name = staticPropertyName(key);
     if (name) addRef(refs, name, filePath, property, 'required');
+  }
+}
+
+function collectFrameworkEnvConfig(node: NodeLike, refs: EnvReference[], filePath: string): void {
+  if (!isFrameworkConfigFile(filePath)) return;
+  if (node.type !== 'ObjectProperty' && node.type !== 'Property') return;
+  const key = node.key as NodeLike | undefined;
+  if (staticPropertyName(key) !== 'env') return;
+  const value = node.value as NodeLike | undefined;
+  if (value?.type !== 'ObjectExpression') return;
+
+  const properties = (value.properties as NodeLike[] | undefined) ?? [];
+  for (const property of properties) {
+    if (property.type !== 'ObjectProperty' && property.type !== 'Property') continue;
+    const name = staticPropertyName(property.key as NodeLike | undefined);
+    if (!name || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) continue;
+    const defaultValue = literalValueString(property.value as NodeLike | undefined);
+    refs.push({
+      name,
+      sourceType: 'deployment',
+      file: filePath,
+      line: property.loc?.start?.line,
+      column: property.loc?.start?.column,
+      language: languageForPath(filePath),
+      accessType: defaultValue === undefined ? 'unknown' : 'defaulted',
+      defaultValue,
+      confidence: 'high'
+    });
   }
 }
 
@@ -219,8 +248,22 @@ function literalString(node: NodeLike | undefined): string | undefined {
   return undefined;
 }
 
+function literalValueString(node: NodeLike | undefined): string | undefined {
+  if (!node) return undefined;
+  if (node.type === 'StringLiteral' || node.type === 'NumericLiteral' || node.type === 'BooleanLiteral' || node.type === 'Literal') {
+    const value = node.value;
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value);
+  }
+  if (node.type === 'TemplateLiteral') return literalString(node);
+  return undefined;
+}
+
 function languageForPath(filePath: string): 'js' | 'ts' {
   return /\.tsx?$/.test(filePath) ? 'ts' : 'js';
+}
+
+function isFrameworkConfigFile(filePath: string): boolean {
+  return /(?:^|\/)(?:next|vite|nuxt|astro|svelte|remix)\.config\.[cm]?[jt]s$/.test(filePath);
 }
 
 function extractJavaScriptRegexFallback(content: string, filePath: string): EnvReference[] {

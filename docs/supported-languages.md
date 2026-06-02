@@ -12,6 +12,7 @@ Detected with AST parsing where possible:
 - `Bun.env.NAME`
 - destructuring from `process.env`
 - schema-like object keys in `cleanEnv`, `envsafe`, `createEnv`, and `z.object`
+- framework config `env` object keys in `next.config.*`, `vite.config.*`, `nuxt.config.*`, `astro.config.*`, `svelte.config.*`, and `remix.config.*`
 
 ## Python
 
@@ -31,4 +32,3 @@ Detected with Python `ast` when `python3` is available:
 - GitHub Actions `env`
 - Vercel JSON `env`
 - Netlify TOML environment sections
-

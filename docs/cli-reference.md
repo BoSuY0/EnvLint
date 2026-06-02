@@ -19,10 +19,12 @@ Options:
 - `--output <path>`
 - `--strict`: exit non-zero on warnings or errors.
 - `--ci`: exit non-zero on errors.
+- `--allow-read-values`: read values from real env files for local policy checks. JSON reports mask those real values as `<redacted-env-value>`.
+- `--redact-secret-names`: mask secret-like variable names in report output.
 
 ## `envlint fix [path]`
 
-Updates the primary env example file. Real `.env` files are not modified.
+Updates the primary env example file when `--update-example` is explicitly provided. Real `.env` files are not modified.
 
 Options:
 
@@ -55,4 +57,3 @@ Options:
 - `--base <ref>`
 - `--head <ref>`
 - `--format table|json|markdown|sarif|junit`
-

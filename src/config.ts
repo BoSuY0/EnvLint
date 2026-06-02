@@ -205,8 +205,8 @@ export function renderDefaultConfig(): string {
     ],
     report: {
       format: 'markdown',
-      output: 'envlint-report.md'
+      output: 'envlint-report.md',
+      redactSecretNames: false
     }
   });
 }
-

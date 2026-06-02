@@ -3,7 +3,7 @@
 ## Status
 
 - Phase: public release readiness
-- Current acceptance focus: CAP-7 external public release gates
+- Current acceptance focus: CAP-7 external public release gates; CAP-8 local hardening is verified.
 
 ## Knobs
 
@@ -11,6 +11,7 @@
 - Do not weaken secret-value privacy defaults.
 - Keep GitHub Action implementation compatible with a built `dist/cli.js`.
 - Treat docs as release-surface docs, not a marketing site.
+- Keep internal planning docs out of the npm tarball.
 
 ## Pivot Gates
 

@@ -8,6 +8,16 @@ describe('deployment parsers', () => {
     expect(refs.map((ref) => ref.name).sort()).toEqual(['DATABASE_URL', 'JWT_SECRET', 'NODE_ENV']);
   });
 
+  it('preserves defaults from Dockerfile legacy ENV key value syntax', () => {
+    const refs = parseDeploymentFile('ENV NODE_ENV production\n', 'Dockerfile');
+
+    expect(refs[0]).toMatchObject({
+      name: 'NODE_ENV',
+      accessType: 'defaulted',
+      defaultValue: 'production'
+    });
+  });
+
   it('detects compose, Kubernetes, and GitHub Actions env keys from YAML', () => {
     const composeRefs = parseDeploymentFile(
       `

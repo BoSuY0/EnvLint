@@ -56,3 +56,14 @@ Status markers: `[ ]` pending, `[~]` in progress, `[x]` verified with evidence i
 - [ ] CAP-7.8 Maintainer confirms npm `envlint` package-name/account policy, authenticates npm, and configures `NPM_TOKEN`.
 - [ ] CAP-7.9 Release commit is pushed and GitHub-hosted CI passes on the remote repository. Current remote CI cannot start because GitHub reports the account is locked due to a billing issue.
 - [ ] CAP-7.10 Actual public release is complete: `npm publish --provenance` succeeds, GitHub release exists, and `v1` tag points at the release commit.
+
+## CAP-8: Local Hardening And Feature Expansion
+
+- [x] CAP-8.1 CLI scan supports explicit safe overrides for reading real env values and redacting secret-like variable names without editing config.
+- [x] CAP-8.2 Scan API accepts narrowly scoped config overrides while preserving safe defaults.
+- [x] CAP-8.3 Rule configuration has focused regression coverage for disabled rules and severity overrides.
+- [x] CAP-8.4 Deployment parser has regression coverage for Dockerfile legacy `ENV KEY value` syntax.
+- [x] CAP-8.5 Ignore entries support wildcard names and expiration dates with regression coverage.
+- [x] CAP-8.6 CLI fix requires explicit `--update-example` before mutating env example files.
+- [x] CAP-8.7 JS/TS extraction detects framework config `env` object keys as deployment references.
+- [x] CAP-8.8 CAP-8 changes are verified with focused tests and `npm run release:check`.

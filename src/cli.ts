@@ -38,17 +38,38 @@ program
   .option('--output <path>', 'write report to a file')
   .option('--strict', 'exit non-zero on warnings or errors')
   .option('--ci', 'exit non-zero on errors')
-  .action(async (targetPath: string, options: { config?: string; format?: ReportFormat; output?: string; strict?: boolean; ci?: boolean }) => {
-    const result = await scanProject(targetPath, { configPath: options.config });
-    const format = options.format ?? result.config.report.format;
-    const output = formatFindings(result.findings, result, {
-      format,
-      redactSecretNames: result.config.report.redactSecretNames
-    });
-    await writeOrPrint(output, options.output ?? (options.format ? undefined : result.config.report.output));
-    if (options.strict && result.findings.some((finding) => finding.severity === 'warn' || finding.severity === 'error')) process.exitCode = 1;
-    if (options.ci && result.findings.some((finding) => finding.severity === 'error')) process.exitCode = 1;
-  });
+  .option('--allow-read-values', 'read values from real env files for local policy checks; reports redact those values')
+  .option('--redact-secret-names', 'redact secret-like variable names in reports')
+  .action(
+    async (
+      targetPath: string,
+      options: {
+        config?: string;
+        format?: ReportFormat;
+        output?: string;
+        strict?: boolean;
+        ci?: boolean;
+        allowReadValues?: boolean;
+        redactSecretNames?: boolean;
+      }
+    ) => {
+      const result = await scanProject(targetPath, {
+        configPath: options.config,
+        configOverrides: {
+          files: options.allowReadValues ? { readRealValues: true } : undefined,
+          report: options.redactSecretNames ? { redactSecretNames: true } : undefined
+        }
+      });
+      const format = options.format ?? result.config.report.format;
+      const output = formatFindings(result.findings, result, {
+        format,
+        redactSecretNames: result.config.report.redactSecretNames
+      });
+      await writeOrPrint(output, options.output ?? (options.format ? undefined : result.config.report.output));
+      if (options.strict && result.findings.some((finding) => finding.severity === 'warn' || finding.severity === 'error')) process.exitCode = 1;
+      if (options.ci && result.findings.some((finding) => finding.severity === 'error')) process.exitCode = 1;
+    }
+  );
 
 program
   .command('fix')
@@ -60,18 +81,35 @@ program
   .option('--preserve-comments', 'add comments for new keys')
   .option('--remove-unused', 'remove unused vars from examples')
   .option('--dry-run', 'print the generated file without writing')
-  .action(async (targetPath: string, options: { config?: string; sort?: boolean; preserveComments?: boolean; removeUnused?: boolean; dryRun?: boolean }) => {
-    const result = await scanProject(targetPath, { configPath: options.config });
-    const fix = await updateEnvExample(path.resolve(targetPath), result, {
-      updateExample: true,
-      sort: options.sort,
-      preserveComments: options.preserveComments,
-      removeUnused: options.removeUnused,
-      dryRun: options.dryRun
-    });
-    if (options.dryRun) console.log(fix.output);
-    else console.log(fix.changed ? `Updated ${fix.file}: added ${fix.added.length}, removed ${fix.removed.length}` : `${fix.file} already up to date`);
-  });
+  .action(
+    async (
+      targetPath: string,
+      options: {
+        config?: string;
+        updateExample?: boolean;
+        sort?: boolean;
+        preserveComments?: boolean;
+        removeUnused?: boolean;
+        dryRun?: boolean;
+      }
+    ) => {
+      if (!options.updateExample) {
+        console.error('Use --update-example to modify env example files.');
+        process.exitCode = 1;
+        return;
+      }
+      const result = await scanProject(targetPath, { configPath: options.config });
+      const fix = await updateEnvExample(path.resolve(targetPath), result, {
+        updateExample: options.updateExample,
+        sort: options.sort,
+        preserveComments: options.preserveComments,
+        removeUnused: options.removeUnused,
+        dryRun: options.dryRun
+      });
+      if (options.dryRun) console.log(fix.output);
+      else console.log(fix.changed ? `Updated ${fix.file}: added ${fix.added.length}, removed ${fix.removed.length}` : `${fix.file} already up to date`);
+    }
+  );
 
 program
   .command('explain')

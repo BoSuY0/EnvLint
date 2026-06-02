@@ -46,5 +46,79 @@ describe('reporters', () => {
     expect(markdown).toContain('<redacted-secret-name>');
     expect(JSON.parse(json).findings[0].variableName).toBe('<redacted-secret-name>');
   });
-});
 
+  it('redacts values read from real env files in JSON reports', () => {
+    const realEnvResult = {
+      ...result,
+      references: [
+        {
+          name: 'DATABASE_URL',
+          sourceType: 'env-file',
+          file: '.env',
+          line: 1,
+          column: 0,
+          language: 'dotenv',
+          accessType: 'defaulted',
+          defaultValue: 'postgres://real-secret',
+          confidence: 'high',
+          envFileKind: 'real',
+          valueWasRead: true
+        }
+      ],
+      contract: {
+        variables: {
+          DATABASE_URL: {
+            name: 'DATABASE_URL',
+            references: [
+              {
+                name: 'DATABASE_URL',
+                sourceType: 'env-file',
+                file: '.env',
+                line: 1,
+                column: 0,
+                language: 'dotenv',
+                accessType: 'defaulted',
+                defaultValue: 'postgres://real-secret',
+                confidence: 'high',
+                envFileKind: 'real',
+                valueWasRead: true
+              }
+            ],
+            required: false,
+            presentInExample: false,
+            presentInDeployment: false,
+            presentInSchema: false,
+            secretLike: false,
+            publicFrontend: false,
+            dynamic: false,
+            codeReferences: [],
+            exampleReferences: [],
+            realEnvReferences: [
+              {
+                name: 'DATABASE_URL',
+                sourceType: 'env-file',
+                file: '.env',
+                line: 1,
+                column: 0,
+                language: 'dotenv',
+                accessType: 'defaulted',
+                defaultValue: 'postgres://real-secret',
+                confidence: 'high',
+                envFileKind: 'real',
+                valueWasRead: true
+              }
+            ],
+            deploymentReferences: [],
+            schemaReferences: []
+          }
+        }
+      },
+      findings: []
+    } satisfies ScanResult;
+
+    const json = formatFindings([], realEnvResult, { format: 'json' });
+
+    expect(json).not.toContain('postgres://real-secret');
+    expect(JSON.parse(json).variables.DATABASE_URL.realEnvReferences[0].defaultValue).toBe('<redacted-env-value>');
+  });
+});

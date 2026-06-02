@@ -31,6 +31,25 @@ describe('JavaScript and TypeScript extraction', () => {
     );
     expect(refs.find((ref) => ref.name === 'VITE_API_URL')?.isPublicFrontend).toBe(true);
   });
+
+  it('detects framework config env object keys as deployment references', () => {
+    const refs = extractJavaScriptEnv(
+      `
+      export default {
+        env: {
+          NEXT_PUBLIC_API_URL: 'https://example.test',
+          SERVER_SECRET: process.env.SERVER_SECRET
+        }
+      };
+      `,
+      'next.config.js'
+    );
+
+    expect(refs.map((ref) => `${ref.sourceType}:${ref.name}:${ref.accessType}`).sort()).toEqual(
+      expect.arrayContaining(['deployment:NEXT_PUBLIC_API_URL:defaulted', 'deployment:SERVER_SECRET:unknown', 'code:SERVER_SECRET:required'])
+    );
+    expect(refs.find((ref) => ref.sourceType === 'deployment' && ref.name === 'NEXT_PUBLIC_API_URL')?.defaultValue).toBe('https://example.test');
+  });
 });
 
 describe('Python extraction', () => {

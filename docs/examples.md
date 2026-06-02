@@ -7,6 +7,15 @@ const publicApi = process.env.NEXT_PUBLIC_API_URL;
 const secret = process.env.INTERNAL_SECRET;
 ```
 
+```ts
+// next.config.js
+export default {
+  env: {
+    NEXT_PUBLIC_API_URL: 'https://api.example.com'
+  }
+};
+```
+
 EnvLint warns when secret-like names are exposed through `NEXT_PUBLIC_`.
 
 ## Vite
@@ -47,4 +56,3 @@ env:
         name: db
         key: url
 ```
-

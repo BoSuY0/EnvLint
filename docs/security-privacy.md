@@ -10,4 +10,4 @@ Defaults:
 - Autofix targets env example files only.
 - `report.redactSecretNames: true` masks secret-like variable names in JSON, Markdown, SARIF, JUnit, and table reports.
 
-If `files.readRealValues: true` is enabled, treat reports as sensitive. Use this only for local checks that need empty/default validation.
+If `files.readRealValues: true` or `envlint scan --allow-read-values` is enabled, EnvLint may use real values internally for local checks, but reports replace read real env values with `<redacted-env-value>`. Treat raw process output and local workspaces with care, and use this only for checks that need empty/default validation.

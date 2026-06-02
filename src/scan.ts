@@ -7,15 +7,21 @@ import { extractEnvReferences } from './extractors/index.js';
 import { parseDeploymentFile } from './parsers/deployment.js';
 import { parseDotenv } from './parsers/dotenv.js';
 import { evaluateRules } from './rules/index.js';
-import type { EnvReference, ScanResult } from './types.js';
+import type { EnvLintConfig, EnvReference, ScanResult } from './types.js';
+
+export interface ScanConfigOverrides {
+  files?: Pick<Partial<EnvLintConfig['files']>, 'readRealValues'>;
+  report?: Pick<Partial<EnvLintConfig['report']>, 'redactSecretNames'>;
+}
 
 export interface ScanOptions {
   configPath?: string;
+  configOverrides?: ScanConfigOverrides;
 }
 
 export async function scanProject(root = process.cwd(), options: ScanOptions = {}): Promise<ScanResult> {
   const resolvedRoot = path.resolve(root);
-  const config = await loadConfig(resolvedRoot, options.configPath);
+  const config = applyConfigOverrides(await loadConfig(resolvedRoot, options.configPath), options.configOverrides);
   const files = await collectSourceFiles(resolvedRoot, config);
   const references: EnvReference[] = [];
   const errors: string[] = [];
@@ -65,6 +71,21 @@ export async function scanProject(root = process.cwd(), options: ScanOptions = {
   };
 }
 
+function applyConfigOverrides(config: EnvLintConfig, overrides?: ScanConfigOverrides): EnvLintConfig {
+  if (!overrides) return config;
+  return {
+    ...config,
+    files: {
+      ...config.files,
+      ...overrides.files
+    },
+    report: {
+      ...config.report,
+      ...overrides.report
+    }
+  };
+}
+
 async function readAndCollect(root: string, file: string, errors: string[], collect: (content: string) => void): Promise<void> {
   try {
     collect(await readFile(path.join(root, file), 'utf8'));
@@ -72,4 +93,3 @@ async function readAndCollect(root: string, file: string, errors: string[], coll
     errors.push(`${file}: ${(error as Error).message}`);
   }
 }
-

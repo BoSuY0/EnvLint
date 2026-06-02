@@ -12,3 +12,9 @@
 - Public GitHub remote: `https://github.com/BoSuY0/EnvLint`.
 - Public blocker issue: `https://github.com/BoSuY0/EnvLint/issues/1`.
 - Public blocker audit comment: `https://github.com/BoSuY0/EnvLint/issues/1#issuecomment-4603655873`.
+- CAP-8 hardening added scan-time overrides for `files.readRealValues` and `report.redactSecretNames`; safe defaults remain unchanged.
+- Reports now replace values read from real env files with `<redacted-env-value>` even when value reading is explicitly enabled.
+- CLI `fix` now requires explicit `--update-example` before mutating env example files; the library `updateEnvExample` remains an explicit API.
+- Ignore entries now support `*` and `?` wildcards, and `expires` dates stop suppressing findings after the date passes.
+- JS/TS extraction now treats framework config `env` object keys in `next/vite/nuxt/astro/svelte/remix.config.*` as deployment references.
+- Internal design docs under `docs/plans` are kept in the repo but excluded from npm package tarballs.
