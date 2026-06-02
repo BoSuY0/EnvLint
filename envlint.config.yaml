@@ -1,0 +1,67 @@
+version: 1
+
+project:
+  type: mixed
+  root: .
+
+scan:
+  include:
+    - src
+    - action.yml
+    - .github/workflows
+  exclude:
+    - node_modules
+    - dist
+    - coverage
+
+files:
+  examples:
+    - .env.example
+  realEnv:
+    - .env
+  readRealValues: false
+
+rules:
+  missingInExample: error
+  unusedInExample: warn
+  missingInDeployment: warn
+  dynamicAccess: warn
+  unsafeDefault: error
+  frontendSecretExposure: error
+  requiredWithoutValidation: warn
+  duplicateDefinition: warn
+  invalidNameFormat: warn
+  missingDescriptionComment: info
+  nameMismatch: info
+
+frontend:
+  publicPrefixes:
+    - VITE_
+    - NEXT_PUBLIC_
+    - PUBLIC_
+  secretNamePatterns:
+    - SECRET
+    - TOKEN
+    - PRIVATE
+    - PASSWORD
+    - API_KEY
+
+production:
+  contexts:
+    - production
+    - prod
+  unsafeDefaults:
+    - localhost
+    - changeme
+    - password
+    - admin
+    - test
+
+ignore:
+  - name: OPTIONAL_DEBUG_FLAG
+    reason: Used only in local debugging
+    expires: 2026-12-31
+
+report:
+  format: markdown
+  output: envlint-report.md

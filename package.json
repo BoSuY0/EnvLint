@@ -1,0 +1,69 @@
+{
+  "name": "envlint",
+  "version": "1.0.0",
+  "description": "Static environment variable contract linter for CLI, CI, and GitHub Actions.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "envlint": "dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "action.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "docs",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "scripts": {
+    "prepack": "npm run build",
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json --noEmit",
+    "smoke": "node dist/cli.js scan fixtures/node-express --format json --output /tmp/envlint-smoke.json",
+    "package:lint": "publint",
+    "pack:dry-run": "npm pack --dry-run",
+    "publish:dry-run": "npm publish --dry-run",
+    "release:check": "npm test && npm run lint && npm run build && npm run smoke && npm audit --audit-level=moderate && npm run package:lint && npm run pack:dry-run"
+  },
+  "keywords": [
+    "env",
+    "dotenv",
+    "lint",
+    "ci",
+    "github-action",
+    "environment-variables"
+  ],
+  "dependencies": {
+    "@babel/parser": "^7.28.5",
+    "commander": "^14.0.2",
+    "fast-glob": "^3.3.3",
+    "yaml": "^2.8.1",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "publint": "^0.3.21",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,7 @@
+services:
+  api:
+    image: envlint/example
+    environment:
+      DATABASE_URL: postgres://db
+      JWT_SECRET: example
+

@@ -1,0 +1,145 @@
+name: EnvLint
+description: Scan environment variable contracts and publish CI-friendly reports.
+author: EnvLint
+
+inputs:
+  path:
+    description: Project path to scan.
+    required: false
+    default: .
+  config:
+    description: EnvLint config file.
+    required: false
+    default: envlint.config.yaml
+  format:
+    description: Report format for the main output.
+    required: false
+    default: markdown
+  output:
+    description: Report artifact path.
+    required: false
+    default: envlint-report.md
+  comment-pr:
+    description: Post the Markdown report as a pull request comment when possible.
+    required: false
+    default: "false"
+  fail-on-error:
+    description: Fail the workflow when EnvLint finds errors.
+    required: false
+    default: "true"
+  diff:
+    description: Limit findings to files changed between base and head.
+    required: false
+    default: "false"
+  annotations:
+    description: Emit inline GitHub workflow annotations for finding evidence locations.
+    required: false
+    default: "true"
+  base:
+    description: Base ref for diff mode.
+    required: false
+    default: origin/main
+  head:
+    description: Head ref for diff mode.
+    required: false
+    default: HEAD
+  upload-artifact:
+    description: Upload the generated report artifact.
+    required: false
+    default: "true"
+
+outputs:
+  report:
+    description: Path to the generated report.
+    value: ${{ inputs.output }}
+
+runs:
+  using: composite
+  steps:
+    - name: Run EnvLint
+      shell: bash
+      env:
+        ENVLINT_PATH: ${{ inputs.path }}
+        ENVLINT_CONFIG: ${{ inputs.config }}
+        ENVLINT_FORMAT: ${{ inputs.format }}
+        ENVLINT_OUTPUT: ${{ inputs.output }}
+        ENVLINT_DIFF: ${{ inputs.diff }}
+        ENVLINT_ANNOTATIONS: ${{ inputs.annotations }}
+        ENVLINT_BASE: ${{ inputs.base }}
+        ENVLINT_HEAD: ${{ inputs.head }}
+        ENVLINT_FAIL_ON_ERROR: ${{ inputs.fail-on-error }}
+      run: |
+        set -euo pipefail
+        cli="$GITHUB_ACTION_PATH/dist/cli.js"
+        if [[ ! -f "$cli" ]]; then
+          echo "::error::EnvLint action requires built dist/cli.js. Run npm run build before packaging the action."
+          exit 1
+        fi
+        status=0
+        if [[ "$ENVLINT_DIFF" == "true" ]]; then
+          node "$cli" diff "$ENVLINT_PATH" --base "$ENVLINT_BASE" --head "$ENVLINT_HEAD" --config "$ENVLINT_CONFIG" --format "$ENVLINT_FORMAT" > "$ENVLINT_OUTPUT" || status=$?
+        else
+          if [[ "$ENVLINT_FAIL_ON_ERROR" == "true" ]]; then
+            node "$cli" scan "$ENVLINT_PATH" --config "$ENVLINT_CONFIG" --format "$ENVLINT_FORMAT" --output "$ENVLINT_OUTPUT" --ci || status=$?
+          else
+            node "$cli" scan "$ENVLINT_PATH" --config "$ENVLINT_CONFIG" --format "$ENVLINT_FORMAT" --output "$ENVLINT_OUTPUT" || status=$?
+          fi
+        fi
+        echo "$status" > "$RUNNER_TEMP/envlint-status"
+        if [[ "$ENVLINT_ANNOTATIONS" == "true" ]]; then
+          annotations_json="$RUNNER_TEMP/envlint-annotations.json"
+          if [[ "$ENVLINT_DIFF" == "true" ]]; then
+            node "$cli" diff "$ENVLINT_PATH" --base "$ENVLINT_BASE" --head "$ENVLINT_HEAD" --config "$ENVLINT_CONFIG" --format json > "$annotations_json" || true
+          else
+            node "$cli" scan "$ENVLINT_PATH" --config "$ENVLINT_CONFIG" --format json --output "$annotations_json" || true
+          fi
+          node - "$annotations_json" <<'NODE'
+        const fs = require('node:fs');
+        const reportPath = process.argv[2];
+        if (!reportPath || !fs.existsSync(reportPath)) process.exit(0);
+        const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+        const findings = report.findings || [];
+        const escape = (value) => String(value ?? '')
+          .replace(/%/g, '%25')
+          .replace(/\r/g, '%0D')
+          .replace(/\n/g, '%0A')
+          .replace(/:/g, '%3A')
+          .replace(/,/g, '%2C');
+        for (const finding of findings) {
+          const ref = finding.evidence?.[0] || {};
+          const command = finding.severity === 'error' ? 'error' : finding.severity === 'warn' ? 'warning' : 'notice';
+          const attrs = [
+            ref.file ? `file=${escape(ref.file)}` : undefined,
+            ref.line ? `line=${escape(ref.line)}` : undefined,
+            ref.column !== undefined ? `col=${escape(Number(ref.column) + 1)}` : undefined,
+            `title=${escape(`EnvLint ${finding.ruleId}`)}`
+          ].filter(Boolean).join(',');
+          console.log(`::${command} ${attrs}::${escape(finding.message)}`);
+        }
+        NODE
+        fi
+    - name: Comment on pull request
+      if: ${{ inputs.comment-pr == 'true' && github.event_name == 'pull_request' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_PR_NUMBER: ${{ github.event.pull_request.number }}
+        ENVLINT_OUTPUT: ${{ inputs.output }}
+      run: |
+        set -euo pipefail
+        if command -v gh >/dev/null 2>&1 && [[ -f "$ENVLINT_OUTPUT" ]] && [[ -n "$GH_PR_NUMBER" ]]; then
+          gh pr comment "$GH_PR_NUMBER" --body-file "$ENVLINT_OUTPUT" || true
+        fi
+    - name: Upload EnvLint report
+      if: ${{ inputs.upload-artifact == 'true' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: envlint-report
+        path: ${{ inputs.output }}
+        if-no-files-found: ignore
+    - name: Apply EnvLint exit policy
+      shell: bash
+      run: |
+        set -euo pipefail
+        status="$(cat "$RUNNER_TEMP/envlint-status" 2>/dev/null || echo 0)"
+        exit "$status"

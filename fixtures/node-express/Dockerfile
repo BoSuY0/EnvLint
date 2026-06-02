@@ -1,0 +1,3 @@
+ARG DATABASE_URL
+ENV NODE_ENV=production
+
